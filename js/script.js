@@ -1,4 +1,4 @@
-window.onload = function () {
+window.addEventListener("load", function () {
   const startButton = document.getElementById("start-button");
   const restartButton = document.getElementById("restart-button");
 
@@ -8,5 +8,10 @@ window.onload = function () {
 
   function startGame() {
     console.log("start game");
+    let game = new Game();
+
+    game.start();
   }
-};
+});
+
+//window.onload = function () {};
