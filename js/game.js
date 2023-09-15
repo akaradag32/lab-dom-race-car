@@ -1,8 +1,8 @@
 class Game {
   constructor() {
-    this.startScreen = document.getElementById("game-intro");
-    this.gameScreen = document.getElementById("game-screen");
-    this.gameEndScreen = document.getElementById("game-end");
+    this.startScreen = document.getElementById('game-intro');
+    this.gameScreen = document.getElementById('game-screen');
+    this.gameEndScreen = document.getElementById('game-end');
 
     this.player = null;
 
@@ -11,11 +11,11 @@ class Game {
 
     this.player = new Player(
       this.gameScreen,
-      this.width / 2,
-      this.top / 2,
+      200,
+      500,
       40,
       80,
-      "./images/car.png"
+      './images/car.png'
     );
 
     this.obstacles = [];
@@ -27,17 +27,17 @@ class Game {
   }
 
   start() {
-    this.startScreen.style.display = "none";
+    this.startScreen.style.display = 'none';
 
-    this.gameScreen.style.display = "block";
-    this.gameScreen.style.height = "${this.height}px";
-    this.gameScreen.style.width = "${this.width}px";
+    this.gameScreen.style.display = 'block';
+    this.gameScreen.style.height = this.height + 'px';
+    this.gameScreen.style.width = this.width + 'px';
 
     this.gameLoop();
   }
 
   gameLoop() {
-    console.log("Game is on loop");
+    console.log('Game is on loop');
 
     if (this.gameIsOver) {
       return;
@@ -48,5 +48,43 @@ class Game {
     window.requestAnimationFrame(() => this.gameLoop());
   }
 
-  update() {}
+  update() {
+    this.player.move();
+
+    for (let i = 0; i < this.obstacles.length; i++) {
+      const obstacle = this.obstacles[i];
+      obstacle.move();
+
+      if (this.player.didCollide(obstacle)) {
+        obstacle.element.remove();
+        this.obstacles.splice(i, 1);
+        this.lives--;
+        i--;
+      } else if (obstacle.top > this.height) {
+        this.score++;
+        obstacle.element.remove();
+        this.obstacles.splice(i, 1);
+        i--;
+      }
+    }
+    if (this.lives === 0) {
+      this.endGame();
+    }
+
+    if (Math.random() > 0.98 && this.obstacles.length < 1) {
+      this.obstacles.push(new Obstacle(this.gameScreen));
+    }
+  }
+
+  endGame() {
+    this.player.element.remove();
+    this.obstacles.forEach((obstacle) => obstacle.element.remove());
+
+    this.gameIsOver = true;
+
+    // Hide game screen
+    this.gameScreen.style.display = 'none';
+    // Show end game screen
+    this.gameEndScreen.style.display = 'block';
+  }
 }
